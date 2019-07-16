@@ -1,0 +1,19 @@
+#!/bin/sh
+
+
+CompileProcess() {
+
+    
+        MYPATH="/root/Projects/src/Gojeck_Parking_lot_problem_result"
+        EXEC="park_lot_details"
+        RUNCOMMEND="go build park_lot_details.go"
+        RUN_EXC_CMD="./park_lot_details"
+        cd $MYPATH
+        $RUNCOMMEND
+        sleep 10
+        cp -rf $EXEC $MYPATH/bin
+        sleep 1
+      
+}
+clear
+CompileProcess

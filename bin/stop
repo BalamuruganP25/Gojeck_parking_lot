@@ -1,0 +1,44 @@
+#!/bin/sh
+
+GetPID() {
+PROC_PID=$(ps -aux | grep park_lot_details  | grep -v grep | awk '{print $2}')
+}
+
+StopProcess() {
+        PROC_NAME="parking_lot";
+        GetPID
+        if [ -n "$PROC_PID" ] ; then
+                echo "Stopping $PROC_NAME PID $PROC_PID ..."
+                kill $PROC_PID
+                # give grace period for cleanup process.
+                sleep 1
+                GetPID
+                if [ -n "$PROC_PID" ] ; then
+                        alert "Trying to interrupt $PROC_NAME ..."
+                        # send interrupt signal
+                        kill -2 $PROC_PID
+                        sleep 1
+                        GetPID
+                fi
+                if [ -n "$PROC_PID" ] ; then
+                        alert "Killing $PROC_NAME ..."
+                        # send uncaughtable signal
+                        kill -9 $PROC_PID
+                        sleep 1
+                        GetPID
+                        if [ -n "$PROC_PID" ] ; then
+                                alert "$PROC_NAME is killed."
+                        else
+                                # It will not occur since init(parent) process will reap it.
+                                alert "defunct(zombi) process exist. PID: $PROC_PID"
+                        fi
+                else
+                        echo -e "$PROC_NAME is \033[31m STOPPED \033[0m"
+                fi
+        else
+                echo -e "$PROC_NAME is \033[33m NOT RUNNING \033[0m no PID found"
+        fi
+}
+
+clear
+StopProcess

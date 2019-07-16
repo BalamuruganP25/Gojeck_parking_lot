@@ -1,0 +1,40 @@
+#!/bin/sh
+
+GetPID() {
+
+PROC_PID=$(ps -aux | grep park_lot_details  | grep -v grep | awk '{print $2}')
+
+}
+
+StartProcess() {
+
+    
+        MYPATH="/root/Projects/src/Gojeck_Parking_lot_problem_result/bin"
+        EXEC="park_lot_details"
+        RUN_EXC_CMD="./park_lot_details"
+        cd $MYPATH
+
+
+    GetPID
+    PROC_NAME=$EXEC
+
+        if [ -n "$PROC_PID" ] ; then
+                echo -e "park_lot_details $PROC_NAME is already \033[33m RUNNING \033[0m (PID:$PROC_PID)"
+        else
+
+                
+               
+               	echo "Path ==> $MYPATH"
+                $RUN_EXC_CMD
+                sleep 1
+
+                GetPID
+                if [ -n "$PROC_PID" ] ; then
+                        echo -e "park_lot_details $PROC_NAME \033[32m STARTED \033[0m PID:$PROC_PID "
+                else
+                        echo -e "park_lot_details $PROC_NAME \033[31m Start failed \033[0m"
+                fi
+        fi
+}
+clear
+StartProcess
